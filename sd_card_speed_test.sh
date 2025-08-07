@@ -11,13 +11,21 @@ fi
 SD_DIR=$1
 FILENAME="$SD_DIR/file_speed_test.deleteme"
 SIZE=1000 # in MB
+# SIZE=100 # in MB
+
+calc()
+{ 
+  awk "BEGIN { print "$*" }" | cut -d' ' -f1
+}
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
   WRITE_FILE_COMMAND="mkfile ${SIZE}m $FILENAME"
   CLEAR_CACHE_COMMAND="purge"
+  READ_FILE_COMMAND="dd if=$FILENAME of=/dev/null bs=1M oflag=direct"
 else
   WRITE_FILE_COMMAND="dd if=/dev/zero of=$FILENAME bs=1M count=$SIZE oflag=direct"
   CLEAR_CACHE_COMMAND='sh -c echo 3 > /proc/sys/vm/drop_caches'
+  READ_FILE_COMMAND="dd if=$FILENAME of=/dev/null bs=1M oflag=direct"
 fi
 READ_FILE_COMMAND="cat $FILENAME > /dev/null"
 
@@ -38,7 +46,7 @@ WriteFile() {
   echo "Writing ${SIZE}MB file $FILENAME..."
   local WRITE_SECONDS=`RunTimeInSeconds $WRITE_FILE_COMMAND`
   if [ -f "$FILENAME" ]; then
-    local WRITE_SPEED=$( echo "scale=2; $SIZE/$WRITE_SECONDS" | bc -l)
+    local WRITE_SPEED=$(calc $SIZE/$WRITE_SECONDS)
     echo "Average sequential write speed: ${WRITE_SPEED}MB/sec."
   else
     echo "Error writing file $FILENAME"
@@ -48,7 +56,7 @@ WriteFile() {
 
 ReadFile() {
   local READ_SECONDS=`RunTimeInSeconds $READ_FILE_COMMAND`
-  local READ_SPEED=$( echo "scale=2; $SIZE/$READ_SECONDS" | bc -l)
+  local READ_SPEED=$(calc $SIZE/$READ_SECONDS)
   echo "Average sequential read speed: ${READ_SPEED}MB/sec."
 }
 
@@ -57,3 +65,4 @@ WriteFile
 trap "rm $FILENAME" 0
 ClearFileCache
 ReadFile
+
