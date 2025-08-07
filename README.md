@@ -3,8 +3,7 @@ Bash script for Mac OS X and Linux to test SD/microSD card or SSD/HDD/USB drive 
 
 this is fork from: https://github.com/biodranik/sd-card-speed-test/tree/master
 
-- Added fuctionality to test read speed
-- Repaired script errors on Ubuntu 24.04
+- Simpified test process. Tested on Ubuntu/Lubuntu
 
 Usage:
 ```
