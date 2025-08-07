@@ -21,11 +21,9 @@ calc()
 if [[ "$OSTYPE" == "darwin"* ]]; then
   WRITE_FILE_COMMAND="mkfile ${SIZE}m $FILENAME"
   CLEAR_CACHE_COMMAND="purge"
-  READ_FILE_COMMAND="dd if=$FILENAME of=/dev/null bs=1M oflag=direct"
 else
   WRITE_FILE_COMMAND="dd if=/dev/zero of=$FILENAME bs=1M count=$SIZE oflag=direct"
   CLEAR_CACHE_COMMAND='sh -c echo 3 > /proc/sys/vm/drop_caches'
-  READ_FILE_COMMAND="dd if=$FILENAME of=/dev/null bs=1M oflag=direct"
 fi
 READ_FILE_COMMAND="cat $FILENAME > /dev/null"
 
